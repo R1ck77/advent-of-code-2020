@@ -51,5 +51,3 @@
   (println "Pair: " (find-pair (read-problem)))
   (println "Triplet: " (find-triplet (read-problem))))
 
-
-
