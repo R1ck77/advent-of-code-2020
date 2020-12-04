@@ -3,12 +3,14 @@
             [clojure.string :as string]
             [advent-of-code-2020.day1 :as day1]
             [advent-of-code-2020.day2 :as day2]
-            [advent-of-code-2020.day3 :as day3]))
+            [advent-of-code-2020.day3 :as day3]
+            [advent-of-code-2020.day4 :as day4]))
 
 (defn advent-of-code-2020 []
   (day1/day1)
   (day2/day2)
-  (day3/day3))
+  (day3/day3)
+  (day4/day4))
 
 
 
