@@ -1,6 +1,6 @@
 # advent-of-code-2020
 
-A Clojure library designed to ... well, that part is up to you.
+My solutions for the "Advent of code 2020" (https://adventofcode.com/), in Clojure.
 
 ## Usage
 
