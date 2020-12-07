@@ -13,30 +13,34 @@
   [xtuples]
   (apply * (pick-solution xtuples)))
 
-(defn- three-ways-diagonal-cartesian
-  "Return a lazy sequence of triplets (i j k) with i,j,k in xint, and i < j < k"
-  [xint]
-  (filter #(and (< (first %) (second %))
-                (< (second %) (nth % 2)))
-          (for [i xint j xint k xint] [i j k])))
-
-(defn- find-triplet
-  "Return the solution for triplets"
-  [xint]
-  (solve-for-n-tuples
-   (three-ways-diagonal-cartesian xint)))
-
 (defn- two-ways-diagonal-cartesian
   "Return a lazy sequence of pairs (i j) with i,j in xint, and i < j"
-  [xint]
-  (filter #(< (first %) (second %))
-                  (for [i xint j xint] [i j])))
+  [xint limit]
+  (filter #(and (< (first %) (second %))
+                (<= (apply + %) limit))
+          (for [i xint j xint] [i j])))
 
 (defn- find-pair
   "Return the solution for pairs"
   [xint]
   (solve-for-n-tuples
-   (two-ways-diagonal-cartesian xint)))
+   (two-ways-diagonal-cartesian xint 2020)))
+
+(defn- three-ways-diagonal-cartesian [xint limit]
+  "Return a lazy sequence of triplets (i j k) with i,j,k in xint, and i < j < k
+
+This optimized vesion does a preemptive check to reduce the number of iterations."
+  (apply concat
+         (map (fn [[i j]]
+                (map #(vector i j %)
+                     (filter #(< j %) xint)))
+              (two-ways-diagonal-cartesian xint 2020))))
+
+(defn- find-triplet
+  "Return the solution for triplets"
+  [xint]
+  (solve-for-n-tuples
+   (three-ways-diagonal-cartesian xint 2020)))
 
 (defn- read-problem
   "Read the list of numbers of the problem"
@@ -50,4 +54,3 @@
   (println "*** Results for day1:")
   (println "Pair: " (find-pair (read-problem)))
   (println "Triplet: " (find-triplet (read-problem))))
-
