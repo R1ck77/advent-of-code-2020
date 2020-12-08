@@ -10,15 +10,22 @@
             [advent-of-code-2020.day7 :as day7]
             [advent-of-code-2020.day8 :as day8]))
 
-(defn advent-of-code-2020 []
-  (day1/day1)
-  (day2/day2)
-  (day3/day3)
-  (day4/day4)
-  (day5/day5)
-  (day6/day6)
-  (day7/day7)
-  (day8/day8))
+(def days [(fn [] (println "Days are 1-based!"))
+           day1/day1
+           day2/day2
+           day3/day3
+           day4/day4
+           day5/day5
+           day6/day6
+           day7/day7
+           day8/day8])
+
+(defn advent-of-code-2020 [& args]
+  (if (not args)
+    (dorun (map #(%) days))
+    (try
+      ((nth days (Integer/valueOf (first args))))
+      (catch Exception e (println (format "Day '%s' not found" (first args)))))))
 
 
 
