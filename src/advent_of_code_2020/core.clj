@@ -1,7 +1,5 @@
 (ns advent-of-code-2020.core
-  (:require [clojure.java.io :as io]
-            [clojure.string :as string]
-            [advent-of-code-2020.day1 :as day1]
+  (:require [advent-of-code-2020.day1 :as day1]
             [advent-of-code-2020.day2 :as day2]
             [advent-of-code-2020.day3 :as day3]
             [advent-of-code-2020.day4 :as day4]
@@ -11,7 +9,8 @@
             [advent-of-code-2020.day8 :as day8]
             [advent-of-code-2020.day9 :as day9]
             [advent-of-code-2020.day10 :as day10]
-            [advent-of-code-2020.day11 :as day11]))
+            [advent-of-code-2020.day11 :as day11]
+            [advent-of-code-2020.day12 :as day12]))
 
 (def days [(fn [] (println "Days are 1-based!"))
            day1/day1
@@ -24,7 +23,8 @@
            day8/day8
            day9/day9
            day10/day10
-           day11/day11])
+           day11/day11
+           day12/day12])
 
 (defn advent-of-code-2020 [& args]
   (if (not args)
