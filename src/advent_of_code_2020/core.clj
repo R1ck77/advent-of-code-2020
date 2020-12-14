@@ -32,7 +32,7 @@
 
 (defn advent-of-code-2020 [& args]
   (if (not args)
-    (dorun (map #(%) days))
+    (dorun (map #(%) (rest days)))
     (try
       ((nth days (Integer/valueOf (first args))))
       (catch Exception e (println (format "Day '%s' not found" (first args)))))))
