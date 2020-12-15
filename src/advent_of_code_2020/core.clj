@@ -12,7 +12,8 @@
             [advent-of-code-2020.day11 :as day11]
             [advent-of-code-2020.day12 :as day12]
             [advent-of-code-2020.day13 :as day13]
-            [advent-of-code-2020.day14 :as day14]))
+            [advent-of-code-2020.day14 :as day14]
+            [advent-of-code-2020.day15 :as day15]))
 
 (def days [(fn [] (println "Days are 1-based!"))
            day1/day1
@@ -28,14 +29,15 @@
            day11/day11
            day12/day12
            day13/day13
-           day14/day14])
+           day14/day14
+           day15/day15])
 
 (defn advent-of-code-2020 [& args]
   (if (not args)
     (dorun (map #(%) (rest days)))
     (try
       ((nth days (Integer/valueOf (first args))))
-      (catch Exception e (println (format "Day '%s' not found" (first args)))))))
+      (catch Exception e (println (format "Unable to execute day '%s': %s" (first args) e))))))
 
 
 
