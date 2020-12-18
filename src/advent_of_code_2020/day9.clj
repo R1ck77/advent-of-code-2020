@@ -60,5 +60,4 @@
   (let [numbers (read-numbers)
         invalid-number (get-first-invalid-number numbers)]
     (println "First invalid number in the XMAS sequence:" invalid-number)
-    (println "Sequence of partials of the invalid number:" (extremes-of-sequence-sum numbers invalid-number)))
-  (shutdown-agents))
+    (println "Sequence of partials of the invalid number:" (extremes-of-sequence-sum numbers invalid-number))))

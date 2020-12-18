@@ -43,7 +43,8 @@
     (dorun (map #(%) (rest days)))
     (try
       ((nth days (Integer/valueOf (first args))))
-      (catch Exception e (println (format "Unable to execute day '%s': %s" (first args) e))))))
+      (catch Exception e (println (format "Unable to execute day '%s': %s" (first args) e)))))
+  (shutdown-agents))
 
 
 
