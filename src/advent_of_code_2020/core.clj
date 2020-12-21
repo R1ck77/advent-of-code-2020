@@ -17,7 +17,8 @@
             [advent-of-code-2020.day16 :as day16]
             [advent-of-code-2020.day17 :as day17]
             [advent-of-code-2020.day18 :as day18]
-            [advent-of-code-2020.day19 :as day19]))
+            [advent-of-code-2020.day19 :as day19]
+            [advent-of-code-2020.day20 :as day20]))
 
 (def days [(fn [] (println "Days are 1-based!"))
            day1/day1
@@ -38,7 +39,8 @@
            day16/day16
            day17/day17
            day18/day18
-           day19/day19])
+           day19/day19
+           day20/day20])
 
 (defn advent-of-code-2020 [& args]
   (if (not args)
