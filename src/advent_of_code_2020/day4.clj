@@ -45,21 +45,16 @@
 
 (def optional-fields {:cid identity})
 
-;; TODO/FIXME horribly bloated. Is it possible there is no other way?
-(defn- group [lines]
-  (loop [remaining lines
-         groups []]
-    (if (empty? remaining)
-      groups
-      (let [[group remaining] (split-with #(not= "" %) remaining)]
-        (if (empty? group)
-          (recur '() (conj groups (apply str (interpose " " remaining))))
-          (recur (rest remaining) (conj groups (apply str (interpose " " group)))))))))
+(defn- read-group [text]
+  (apply str (interpose " " (string/split-lines text))))
 
 (defn- read-problem
   "Read the input as a list of raw passport definitions"
-  []
-  (group (string/split-lines (slurp (io/resource "day4-input.txt")))))
+  ([] (read-problem (io/resource "day4-input.txt")))
+  ([location]
+   (map read-group
+        (string/split
+         (slurp location) #"\n\n"))))
 
 (defn- parse-field [raw-field]
   (let [[key remaining] (split-with #(not= % \:) raw-field)]
