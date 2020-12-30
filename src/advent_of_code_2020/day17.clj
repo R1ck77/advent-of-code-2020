@@ -47,14 +47,14 @@
        (not= occupied-neighbors 3)))
 
 (defn- evolve-place [displacements state coordinate]
-  ;;; TODO/FIXME Convoluted, you can probably just account or the central place without removing it
   (let [place-status (state coordinate)
-        interesting-neighbors (disj (compute-range-of-interaction displacements coordinate) coordinate)
-        neighbors (count (filter identity (map state interesting-neighbors)))]
+        neighbors (keep state (filter #(not= coordinate %)
+                                       (compute-range-of-interaction displacements coordinate)))
+        neighbors-count (count neighbors)]
     (and
      (if place-status
-       (not (should-turn-off? neighbors))
-       (should-turn-on? neighbors))
+       (not (should-turn-off? neighbors-count))
+       (should-turn-on? neighbors-count))
      coordinate)))
 
 (defn- compute-affected-squares [displacements state]
