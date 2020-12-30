@@ -2,10 +2,10 @@
 
 (def ^:dynamic *profile* true)
 
-(def ^:private profile-data (atom {}))
+(def profile-data-atom (atom {}))
 
 (defn reset-profile []
-  (reset! profile-data {}))
+  (reset! profile-data-atom {}))
 
 (defmacro profile
   [f-call]
