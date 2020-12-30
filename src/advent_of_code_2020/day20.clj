@@ -1,14 +1,10 @@
 (ns advent-of-code-2020.day20
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [advent-of-code-2020.logging :as logging]))
 
 (set! *warn-on-reflection* true)
-
-;;; TODO/FIXME this could benefit from a lot of optimization (most of the time
-;;; is spent finding the jigsaw matches)
-;;; a) cache some operations (many of them can be cached!). Memoize for the win!
-;;; b) refine some checks: why do 20 transform for a tile that has not the required side?
 
 (defn- read-id [^String text]
   (Integer/valueOf ^String (second (re-matches #"Tile ([0-9]+):" text))))
@@ -154,14 +150,18 @@
 
 (defn- get-any-transform-matching-constraints
   "Can be optimized, e.g. to discard tiles that don't just have the required side"
-  [catalogue tile-data constraints]
+  [catalogue tile-transforms-f tile-data constraints]
   (first
    (filter #(satisfies-constraints? catalogue % constraints)
-           (get-all-transforms tile-data))))
+           (tile-transforms-f tile-data))))
 
 (defn- find-first-tile-for-constraints
-  "Returns the [id oriented-tile-data] of the first unused tile matching the specified constraints"
-  [catalogue unused-tiles constraint]
+  "Returns the [id oriented-tile-data] of the first unused tile matching the specified constraints
+
+  This function could be optimized to early discard tiles that cannot
+  satisfy the specific constraint (e.g. because they have no border
+  sides or don't have the correct sides)."
+  [catalogue tile-transforms-f unused-tiles constraint]
   {:pre [(map? constraint)
          (map? unused-tiles)
          (not (empty? unused-tiles))]}
@@ -169,6 +169,7 @@
         (map (fn [[id tile]]
                (vector id
                        (get-any-transform-matching-constraints catalogue
+                                                               tile-transforms-f
                                                                (:data tile)
                                                                constraint)))
              unused-tiles)))
@@ -191,9 +192,10 @@
   {:left (get-left-constraint (:board board-state) row column)
    :top (get-top-constraint (:board board-state) row column)})
 
-(defn- update-board [board-state row column]
+(defn- update-board [tile-transforms-f board-state row column]
   (let [constraints (get-constraints-for-cell board-state row column)
         [id tile-data] (find-first-tile-for-constraints (:catalogue board-state)
+                                                        tile-transforms-f
                                                         (:unused board-state)
                                                         constraints)]
     (assert id (format "Constraints not satisfied for %d,%d?" row column))
@@ -211,8 +213,9 @@
 (defn- fill-board [empty-board-state]
   {:pre [(is-empty-board-state? empty-board-state)]}
   (let [side (:side empty-board-state)
+        memoized-update-board (partial update-board (memoize get-all-transforms))
         ordered-indices (for [row (range side), column (range side)] (vector row column))]
-    (reduce #(apply update-board % %2) empty-board-state ordered-indices)))
+    (reduce #(apply memoized-update-board  % %2) empty-board-state ordered-indices)))
 
 (defn- create-filled-board-state [tiles]
   (fill-board (get-empty-board-state tiles)))
@@ -251,7 +254,6 @@
   (let [wanted-rows (take height (drop row tile-data))]
     (mapv #(.substring ^String % column (+ column width)) wanted-rows)))
 
-;; TODO/FIXME I'm not optimizing to early discard non-monster tiles…
 (defn- possible-monster-piece?
   "1 is \"could be a monster piece\", 0 is \"could be anything\" "
   [map-char monster-char]
@@ -261,7 +263,9 @@
 (defn- sum-monster-line [line monster-line]
   (apply + (map possible-monster-piece? line monster-line)))
 
-(defn- contains-monster? [tile]
+(defn- contains-monster?
+  "This function could be optimized to early discard negative results"
+  [tile]
   (= sea-monster-signature
      (apply + (map sum-monster-line tile sea-monster))))
 
@@ -306,4 +310,4 @@
   (println "*** Results for day20:")
   (let [problem-input (read-problem)]
     (println "Product of corner tiles IDs:" (part-1 problem-input))
-    (println "Habitat's water roughness:" (part-2 problem-input))))
+    (println "Habitat's water roughness:" (logging/profile (part-2 problem-input)))))
