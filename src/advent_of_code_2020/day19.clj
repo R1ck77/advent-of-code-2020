@@ -113,7 +113,6 @@
     {31 (get-regexp-data-for-rule combinations 31)
      42 (get-regexp-data-for-rule combinations 42)}))
 
-;;; TODO/FIXME better or at least decent estimate
 (defn- get-plausible-combinations
   "Return a range  of [N M] pairs that could match the string.
 
