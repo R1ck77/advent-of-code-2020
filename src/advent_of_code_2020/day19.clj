@@ -90,7 +90,18 @@
                      :default x)) 
                  combinations))
 
-;;; TODO/FIXME remove duplication
+(defn- get-regexp-data-for-rule
+  "Returns the regexps and minimum expression and sizes matched by the specified rule.
+
+  The procedure works only for 42 and 31, due to the particular way
+  the problem is stated."
+  [combinations rule-index]
+  (let [combinations-spec-rule (get combinations rule-index)
+        minimum-generated-for-rule (get-a-minimum-expression combinations-spec-rule)]
+    {:regexp (combinations-to-regexp combinations-spec-rule)
+     :minimum-sample minimum-generated-for-rule
+     :minimum-length (count minimum-generated-for-rule)}))
+
 (defn- get-regexp-data-31-and-42
   "Returns the regexps and minimum expression and sizes matched by rules 42 and 31
 
@@ -98,17 +109,9 @@
   to rule 8 and 11 (the only looping rules and - fortunately - the only children of rule 0)."
   [rules]
   (let [updated-rules (modify-rules rules)
-        combinations (rules-to-combinations updated-rules #{8 11 0 42 31})
-        combinations-31 (get combinations 31)
-        combinations-42 (get combinations 42)]
-    (let [minimum-generated-31 (get-a-minimum-expression combinations-31)
-          minimum-generated-42 (get-a-minimum-expression combinations-42)]
-      {31 {:regexp (combinations-to-regexp combinations-31)
-           :minimum-sample minimum-generated-31
-           :minimum-length (count minimum-generated-31)}
-       42 {:regexp (combinations-to-regexp combinations-42)
-           :minimum-sample minimum-generated-42
-           :minimum-length (count minimum-generated-42)}})))
+        combinations (rules-to-combinations updated-rules #{8 11 0 42 31})]
+    {31 (get-regexp-data-for-rule combinations 31)
+     42 (get-regexp-data-for-rule combinations 42)}))
 
 ;;; TODO/FIXME better or at least decent estimate
 (defn- get-plausible-combinations
