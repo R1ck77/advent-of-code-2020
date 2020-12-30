@@ -1,7 +1,8 @@
 (ns advent-of-code-2020.day11
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
-            [advent-of-code-2020.ferry-seats :as ferry-seats :refer [floor-kwd empty-seat-kwd taken-seat-kwd]]))
+            [advent-of-code-2020.ferry-seats :as ferry-seats :refer [floor-kwd empty-seat-kwd taken-seat-kwd]])
+  (:import [advent_of_code_2020.ferry_seats SeatsLayout]))
 
 (set! *warn-on-reflection* true)
 
@@ -9,7 +10,7 @@
                        \L empty-seat-kwd})
 
 (defn- line-to-row [line]
-  {:pre [(= -1 (.indexOf line "#"))]}
+  {:pre [(= -1 (.indexOf ^String line "#"))]}
   (mapv char-to-position line))
 
 (defn- read-layout
@@ -20,7 +21,7 @@
     (mapv line-to-row
           (string/split-lines (slurp location))))))
 
-(defn- get-neighbors [layout position selector-f]
+(defn- get-neighbors [^SeatsLayout layout position selector-f]
   (map selector-f (.getSeatsAroundPosition layout position)))
 
 (defn- should-get-empty? [threshold neighbors]
@@ -41,21 +42,21 @@
 
 (defn- get-next-state
   "Return the next state for a specific position"
-  [layout selector-f threshold [row column :as position]]
+  [^SeatsLayout layout selector-f threshold [row column :as position]]
   (let [current (.getPos layout position)]
     (cond
       (= current empty-seat-kwd) (evolve-empty layout position selector-f)
       (= current taken-seat-kwd) (evolve-taken layout position selector-f threshold)
       :default current)))
 
-(defn- evolve-layout [old-layout selector-f threshold]
+(defn- evolve-layout [^SeatsLayout old-layout selector-f threshold]
   (let [[rows columns] (.getSize old-layout)]
     (vec
      (for [row (range rows)]
        (mapv #(get-next-state old-layout selector-f threshold %)
              (mapv #(vector row %) (range columns)))))))
 
-(defn- evolve [layout selector-f threshold]
+(defn- evolve ^SeatsLayout [^SeatsLayout layout selector-f threshold]
   (.evolve layout #(evolve-layout % selector-f threshold)))
 
 (defn- evolve-to-equilibrium [layout selector-f threshold]
@@ -70,7 +71,7 @@
       ferry-seats/floor-kwd))
 
 (defn- compute-occupied-seats-at-equilibrium [layout selector-f threshold]
-  (.countOccupiedSeats (evolve-to-equilibrium layout selector-f threshold)))
+  (.countOccupiedSeats ^SeatsLayout (evolve-to-equilibrium layout selector-f threshold)))
 
 (defn day11
   "Print the solutions for day 11"
