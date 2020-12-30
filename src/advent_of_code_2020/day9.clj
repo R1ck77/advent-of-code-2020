@@ -1,8 +1,7 @@
 (ns advent-of-code-2020.day9
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
-            [advent-of-code-2020.handheld :as handheld])
-  (:import [advent_of_code_2020.handheld CpuState]))
+            [advent-of-code-2020.handheld :as handheld]))
 
 (def seq-size 25)
 
@@ -38,16 +37,15 @@
 (defn- sums-to-value? [value sub-sequence]
   (= value (apply + sub-sequence)))
 
-;;; TODO/FIXME working, but ugly…
+(defn- first-subsequence-summing-to-value [precursors value index]
+  (first
+   (filter (partial sums-to-value? value)
+           (sub-sequences (drop index precursors)))))
+
 (defn- compute-sequential-partials [numbers value]
-  (let [precursors (take-while #(not= % value) numbers)]
-    (first
-     (filter identity
-             (pmap (fn [index]
-                     (first
-                      (filter (partial sums-to-value? value)
-                              (sub-sequences (drop index precursors)))))
-                   (range (count precursors)))))))
+  (let [precursors (take-while #(not= % value) numbers)
+        subsequence-with-correct-sum-f (partial first-subsequence-summing-to-value precursors value)]
+    (some subsequence-with-correct-sum-f (range (count precursors)))))
 
 (defn- extremes-of-sequence-sum [numbers value]
   (let [sequence (compute-sequential-partials numbers value)]
