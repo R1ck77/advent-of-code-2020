@@ -3,6 +3,8 @@
             [clojure.string :as string]
             [clojure.set :as set]))
 
+(set! *warn-on-reflection* true)
+
 ;;; TODO/FIXME this could benefit from a lot of optimization (most of the time
 ;;; is spent finding the jigsaw matches)
 ;;; a) cache some operations (many of them can be cached!). Memoize for the win!
@@ -163,15 +165,14 @@
   {:pre [(map? constraint)
          (map? unused-tiles)
          (not (empty? unused-tiles))]}
-  (first
-   (filter second (map (fn [[id tile]]
-                         (vector id
-                                 (get-any-transform-matching-constraints catalogue
-                                                                         (:data tile)
-                                                                         constraint)))
-                       unused-tiles))))
+  (some #(and (second %) %)
+        (map (fn [[id tile]]
+               (vector id
+                       (get-any-transform-matching-constraints catalogue
+                                                               (:data tile)
+                                                               constraint)))
+             unused-tiles)))
 
-;; TODO/FIXME unify the next two
 (defn- get-left-constraint [board row column]
   (if (= column 0)
     :border
