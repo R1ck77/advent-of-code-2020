@@ -1,6 +1,8 @@
 (ns advent-of-code-2020.ferry-seats
   (:require [clojure.string :as string]))
 
+(set! *warn-on-reflection* true)
+
 (def floor-kwd :floor)
 (def empty-seat-kwd :empty)
 (def taken-seat-kwd :taken)
@@ -10,9 +12,11 @@
   (getPos [this position])
   (getSeatsAroundPosition [this position])
   (evolve [this evolve-f])
-  ;; TODO/FIXME This one breaks encapsulation :(
-  (getRawLayout [this])
+  (isSameLayout [this that])
   (countOccupiedSeats [this]))
+
+(defprotocol InternalData
+  (getRawLayout [this]))
 
 (def ^:private keyword-to-string {taken-seat-kwd \#
                                   empty-seat-kwd \L
@@ -61,13 +65,16 @@
                                   (get-size raw-layout)))))
   ([raw-layout get-neighbors-f]
    (let [size (get-size raw-layout)]
-     (reify SeatsLayout
+     (reify
+       InternalData
+       (getRawLayout [this] raw-layout)
+       SeatsLayout
        (toString [this]
          (raw-layout-to-string raw-layout))
        (getSize [this] size)
        (getPos [this position]
          (get-in raw-layout position))
-       (getRawLayout [this] raw-layout)
+       (isSameLayout [this that] (= raw-layout (.getRawLayout ^advent_of_code_2020.ferry_seats.InternalData that)))
        (getSeatsAroundPosition [this position]
          (get-seats-ranges raw-layout position get-neighbors-f))
        (evolve [this evolve-f]

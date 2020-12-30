@@ -3,6 +3,8 @@
             [clojure.string :as string]
             [advent-of-code-2020.ferry-seats :as ferry-seats :refer [floor-kwd empty-seat-kwd taken-seat-kwd]]))
 
+(set! *warn-on-reflection* true)
+
 (def char-to-position {\. floor-kwd
                        \L empty-seat-kwd})
 
@@ -59,8 +61,7 @@
 (defn- evolve-to-equilibrium [layout selector-f threshold]
   (loop [old-layout layout]
     (let [new-layout (evolve old-layout selector-f threshold)]
-      (if (= (.getRawLayout new-layout)
-             (.getRawLayout old-layout))
+      (if (.isSameLayout new-layout old-layout)
         new-layout
         (recur new-layout)))))
 
